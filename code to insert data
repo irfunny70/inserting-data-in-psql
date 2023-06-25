@@ -1,0 +1,44 @@
+import psycopg2
+try:
+    connection = psycopg2.connect(database="staff", user="irfan", password="irfunny334", host="localhost", port="5432")
+    cursor = connection.cursor()
+
+    records = [
+        ['ID', 'FirstName', 'LastName', 'Department', 'Phone', 'Address', 'Salary', 'Skills'],
+        ['1', 'Luke', 'Phillip', 'Sales', '1234567890', '"1st Address Miami"', '52000', 'Online Sales'],
+        ['2', 'Jack', 'Darren', 'IT', '1234567891', '"2nd Address Miami"', '52200', 'Networking'],
+        ['3', 'Ken', 'Wood', 'IT', '1234567892', '"3rd Address Miami"', '58000', 'Python, Java'],
+        ['4', 'John', 'Wilson', 'Marketing', '1234567893', '"4th Address Miami"', '58700', 'Facebook Ads'],
+        ['5', 'Emily', 'Larson', 'Marketing', '1234567894', '"5th Address Miami"', '60000', 'Instagram Ads'],
+        ['6', 'Anna', 'Sullivan', 'Sales', '1234567895', '"6th Address Miami"', '54000', 'In-Person Sales'],
+        ['7', 'Richard', 'Smith', 'Logistics', '1234567896', '"7th Address Miami"', '56000', 'Warehouse Mgmt.'],
+        ['8', 'Ronnie', 'Moore', 'Sales', '1234567897', '"8th Address Miami"', '49000', 'Online Sales'],
+        ['9', 'Ron', 'Drake', 'IT', '1234567898', '"9th Address Miami"', '53000', 'Linux Servers'],
+        ['10', 'Wayne', 'Barker', 'Logistics', '1234567899', '"10th Address Miami"', '59500', 'Product Loading']
+    ]
+
+    for i in records[1:]:
+        try:
+            # Convert salary to an integer if possible
+            salary = int(i[6])
+        except ValueError:
+            # Handle the case when the salary value cannot be converted to an integer
+            print(f"Invalid salary value: {i[6]} for employee ID: {i[0]}. Skipping insertion.")
+            continue
+
+        cursor.execute("""
+            INSERT INTO mystaff.employees (id, first_name, last_name, department, phone, address, salary, skill)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (i[0], i[1], i[2], i[3], i[4], i[5], salary, i[7]))
+
+except psycopg2.Error as err:
+    print("There is an error while inserting records:", err)
+
+else:
+    print("Records inserted successfully!\n")
+    connection.commit()
+
+finally:
+    if connection:
+        cursor.close()
+        connection.close()
